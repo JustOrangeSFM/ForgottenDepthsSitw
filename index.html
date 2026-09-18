@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Загрузка...</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0d0f1a; --bg2: #151827; --card: #1c2036;
+    --accent: #7c5cff; --accent2: #00d4ff;
+    --text: #e8eaf2; --muted: #8a90a8;
+    --border: #2a2f4a; --danger: #ff5c7a;
+  }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+  header { background: linear-gradient(135deg, #1a1d35, #0d0f1a); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  nav { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+  .logo { font-size: 1.5em; font-weight: 800; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-links { display: flex; gap: 20px; flex-wrap: wrap; }
+  .nav-links a { color: var(--text); text-decoration: none; font-weight: 500; }
+  .nav-links a:hover { color: var(--accent2); }
+  .admin-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+  .admin-btn:hover { border-color: var(--accent); background: var(--accent); }
+  .hero { padding: 80px 20px; text-align: center; background: radial-gradient(ellipse at top, rgba(124,92,255,0.15), transparent 60%); }
+  .hero h1 { font-size: 3em; margin-bottom: 20px; background: linear-gradient(90deg, #fff, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 1.2em; color: var(--muted); max-width: 700px; margin: 0 auto; }
+  section { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+  section h2 { font-size: 2em; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); display: inline-block; }
+  .about-text { background: var(--card); padding: 30px; border-radius: 12px; border: 1px solid var(--border); font-size: 1.05em; }
+  .about-text p { margin-bottom: 15px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform 0.2s, border-color 0.2s; cursor: pointer; }
+  .card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .card-img { width: 100%; height: 200px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 3em; color: white; overflow: hidden; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .card-body { padding: 20px; }
+  .card-body h3 { margin-bottom: 8px; color: var(--accent2); }
+  .card-body p { color: var(--muted); font-size: 0.95em; }
+  .card-role { display: inline-block; background: rgba(124,92,255,0.2); color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 0.8em; margin-top: 10px; }
+  .post { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+  .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+  .post-title { font-size: 1.4em; color: var(--accent2); }
+  .post-date { color: var(--muted); font-size: 0.9em; }
+  .post-content { white-space: pre-wrap; }
+  .post-tag { display: inline-block; background: rgba(0,212,255,0.15); color: var(--accent2); padding: 3px 10px; border-radius: 12px; font-size: 0.8em; margin-top: 10px; }
+  .empty { text-align: center; padding: 40px; color: var(--muted); background: var(--card); border-radius: 12px; border: 1px dashed var(--border); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 30px; max-width: 600px; width: 100%; margin: 40px auto; }
+  .modal h3 { margin-bottom: 20px; color: var(--accent2); }  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.9em; }
+  .form-group input, .form-group textarea, .form-group select { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 1em; }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95em; transition: all 0.2s; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #6a49ff; }
+  .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-danger { background: var(--danger); color: white; }
+  .admin-panel { background: var(--bg2); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; margin-bottom: 30px; }
+  .admin-panel h3 { color: var(--accent2); margin-bottom: 15px; }
+  .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .delete-btn { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.85em; }
+  .delete-btn:hover { background: var(--danger); color: white; }
+  footer { text-align: center; padding: 30px 20px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 40px; }
+  .notice { background: #2a1f00; border: 1px solid #ffaa00; color: #ffcc66; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.95em; }
+  @media (max-width: 600px) { .hero h1 { font-size: 2em; } .hero { padding: 50px 20px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">🎮 <span id="logoText">MY GAME</span></div>
+    <div class="nav-links">
+      <a href="#about">Об игре</a>
+      <a href="#characters">Персонажи</a>
+      <a href="#news">Записи</a>
+    </div>
+    <button class="admin-btn" onclick="toggleAdmin()">⚙️ Админ</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <h1 id="gameTitle">Загрузка...</h1>
+  <p id="gameSubtitle"></p>
+</div>
+
+<section id="about">
+  <h2>Об игре</h2>
+  <div class="about-text" id="aboutText">Загрузка...</div>
+</section>
+
+<section id="characters">
+  <h2>Персонажи</h2>
+  <div id="adminCharacters" style="display:none;">
+    <div class="admin-panel">      <h3>Управление персонажами</h3>
+      <div class="notice">⚠️ Изменения сохраняются в <code>characters.json</code>. После нажатия «Скачать JSON» замени файл в папке сайта.</div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" onclick="openCharacterModal()">+ Добавить персонажа</button>
+        <button class="btn btn-secondary" onclick="downloadJSON('characters.json', data.characters)">💾 Скачать characters.json</button>
+      </div>
+    </div>
+  </div>
+  <div class="grid" id="charactersGrid"></div>
+</section>
+
+<section id="news">
+  <h2>Записи и новости</h2>
+  <div id="adminNews" style="display:none;">
+    <div class="admin-panel">
+      <h3>Управление записями</h3>
+      <div class="notice">⚠️ Изменения сохраняются в <code>posts.json</code>. После нажатия «Скачать JSON» замени файл в папке сайта.</div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" onclick="openPostModal()">+ Добавить запись</button>
+        <button class="btn btn-secondary" onclick="downloadJSON('posts.json', data.posts)">💾 Скачать posts.json</button>
+      </div>
+    </div>
+  </div>
+  <div id="postsList"></div>
+</section>
+
+<div id="adminSettings" style="display:none; max-width:1200px; margin: 0 auto; padding: 0 20px;">
+  <div class="admin-panel">
+    <h3>Настройки сайта (settings.json)</h3>
+    <div class="form-group">
+      <label>Название игры</label>
+      <input type="text" id="setTitle">
+    </div>
+    <div class="form-group">
+      <label>Подзаголовок</label>
+      <input type="text" id="setSubtitle">
+    </div>
+    <div class="form-group">
+      <label>Текст «Об игре» (HTML)</label>
+      <textarea id="setAbout" style="min-height: 150px;"></textarea>
+    </div>
+    <button class="btn btn-secondary" onclick="downloadJSON('settings.json', {title: document.getElementById('setTitle').value, subtitle: document.getElementById('setSubtitle').value, about: document.getElementById('setAbout').value})">💾 Скачать settings.json</button>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 <span id="footerTitle">Моя Игра</span></p>
+</footer>
+
+<!-- Модалка персонажа --><div class="modal-overlay" id="characterModal">
+  <div class="modal">
+    <h3 id="characterModalTitle">Новый персонаж</h3>
+    <div class="form-group"><label>Имя</label><input type="text" id="charName"></div>
+    <div class="form-group"><label>Роль / Класс</label><input type="text" id="charRole"></div>
+    <div class="form-group"><label>Описание</label><textarea id="charDesc"></textarea></div>
+    <div class="form-group"><label>URL изображения (необязательно)</label><input type="text" id="charImg"></div>
+    <div class="form-group"><label>Эмодзи-иконка (если нет картинки)</label><input type="text" id="charEmoji" maxlength="4"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveCharacter()">Сохранить</button>
+      <button class="btn btn-secondary" onclick="closeModal('characterModal')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модалка записи -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <h3 id="postModalTitle">Новая запись</h3>
+    <div class="form-group"><label>Заголовок</label><input type="text" id="postTitle"></div>
+    <div class="form-group"><label>Тег (необязательно)</label><input type="text" id="postTag"></div>
+    <div class="form-group"><label>Текст</label><textarea id="postContent" style="min-height: 180px;"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="savePost()">Сохранить</button>
+      <button class="btn btn-secondary" onclick="closeModal('postModal')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let data = { title: 'Моя Игра', subtitle: '', about: '', characters: [], posts: [] };
+  let editingCharId = null;
+  let editingPostId = null;
+  let adminMode = false;
+
+  // ===== Загрузка JSON =====
+  async function loadJSON(path, fallback) {
+    try {
+      const res = await fetch(path + '?t=' + Date.now()); // кэш-бастер
+      if (!res.ok) throw new Error();
+      return await res.json();
+    } catch (e) {
+      console.warn('Не удалось загрузить ' + path + ', использую пустые данные');
+      return fallback;
+    }
+  }
+
+  async function init() {
+    const [settings, characters, posts] = await Promise.all([
+      loadJSON('settings.json', { title: 'Моя Игра', subtitle: 'Загрузи settings.json', about: '<p>Файл settings.json не найден.</p>' }),      loadJSON('characters.json', []),
+      loadJSON('posts.json', [])
+    ]);
+    data.title = settings.title || 'Моя Игра';
+    data.subtitle = settings.subtitle || '';
+    data.about = settings.about || '';
+    data.characters = characters;
+    data.posts = posts;
+    render();
+  }
+
+  // ===== Рендер =====
+  function render() {
+    document.getElementById('gameTitle').textContent = data.title;
+    document.getElementById('gameSubtitle').textContent = data.subtitle;
+    document.getElementById('aboutText').innerHTML = data.about;
+    document.getElementById('logoText').textContent = data.title.toUpperCase();
+    document.getElementById('footerTitle').textContent = data.title;
+    document.title = data.title + ' — Официальный сайт';
+
+    // Настройки в админке
+    if (adminMode) {
+      document.getElementById('setTitle').value = data.title;
+      document.getElementById('setSubtitle').value = data.subtitle;
+      document.getElementById('setAbout').value = data.about;
+    }
+
+    // Персонажи
+    const grid = document.getElementById('charactersGrid');
+    if (data.characters.length === 0) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">Пока нет персонажей. Добавь первого через админ-панель ✨</div>';
+    } else {
+      grid.innerHTML = data.characters.map(c => `
+        <div class="card" onclick="showCharacter(${c.id})">
+          <div class="card-img">
+            ${c.img ? `<img src="${c.img}" alt="${escapeHtml(c.name)}" onerror="this.parentElement.innerHTML='${c.emoji||'🎭'}'">` : (c.emoji || '🎭')}
+          </div>
+          <div class="card-body">
+            <h3>${escapeHtml(c.name)}</h3>
+            <p>${escapeHtml(c.desc).substring(0, 120)}${c.desc.length>120?'...':''}</p>
+            ${c.role ? `<span class="card-role">${escapeHtml(c.role)}</span>` : ''}
+            ${adminMode ? `<button class="delete-btn" style="margin-top:10px;" onclick="event.stopPropagation();deleteCharacter(${c.id})">Удалить</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Записи
+    const list = document.getElementById('postsList');
+    if (data.posts.length === 0) {      list.innerHTML = '<div class="empty">Записей пока нет.</div>';
+    } else {
+      list.innerHTML = data.posts.slice().reverse().map(p => `
+        <div class="post">
+          <div class="post-header">
+            <div class="post-title">${escapeHtml(p.title)}</div>
+            <div class="post-date">${new Date(p.date).toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'})}</div>
+          </div>
+          <div class="post-content">${escapeHtml(p.content)}</div>
+          ${p.tag ? `<span class="post-tag">#${escapeHtml(p.tag)}</span>` : ''}
+          ${adminMode ? `
+            <div style="margin-top:15px; display:flex; gap:8px;">
+              <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.85em;" onclick="editPost(${p.id})">✏️ Изменить</button>
+              <button class="delete-btn" onclick="deletePost(${p.id})">Удалить</button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s||'').replace(/[&<>"']/g, m => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[m]));
+  }
+
+  // ===== Админ =====
+  function toggleAdmin() {
+    if (!adminMode) {
+      const pwd = prompt('Пароль администратора (по умолчанию: admin):');
+      if (pwd === null) return;
+      if (pwd !== 'admin') { alert('Неверный пароль'); return; }
+      adminMode = true;
+    } else {
+      adminMode = false;
+    }
+    document.getElementById('adminCharacters').style.display = adminMode ? 'block' : 'none';
+    document.getElementById('adminNews').style.display = adminMode ? 'block' : 'none';
+    document.getElementById('adminSettings').style.display = adminMode ? 'block' : 'none';
+    render();
+  }
+
+  // ===== Скачивание JSON =====
+  function downloadJSON(filename, obj) {
+    const blob = new Blob([JSON.stringify(obj, null, 2)], {type: 'application/json;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);  }
+
+  // ===== Персонажи =====
+  function openCharacterModal(id) {
+    editingCharId = id || null;
+    document.getElementById('characterModalTitle').textContent = id ? 'Редактировать персонажа' : 'Новый персонаж';
+    if (id) {
+      const c = data.characters.find(x => x.id === id);
+      document.getElementById('charName').value = c.name;
+      document.getElementById('charRole').value = c.role || '';
+      document.getElementById('charDesc').value = c.desc;
+      document.getElementById('charImg').value = c.img || '';
+      document.getElementById('charEmoji').value = c.emoji || '';
+    } else {
+      ['charName','charRole','charDesc','charImg','charEmoji'].forEach(i => document.getElementById(i).value = '');
+    }
+    document.getElementById('characterModal').classList.add('active');
+  }
+
+  function saveCharacter() {
+    const name = document.getElementById('charName').value.trim();
+    const desc = document.getElementById('charDesc').value.trim();
+    if (!name || !desc) { alert('Имя и описание обязательны'); return; }
+    const obj = {
+      id: editingCharId || Date.now(),
+      name,
+      role: document.getElementById('charRole').value.trim(),
+      desc,
+      img: document.getElementById('charImg').value.trim(),
+      emoji: document.getElementById('charEmoji').value.trim() || '🎭'
+    };
+    if (editingCharId) {
+      const i = data.characters.findIndex(x => x.id === editingCharId);
+      data.characters[i] = obj;
+    } else {
+      data.characters.push(obj);
+    }
+    render();
+    closeModal('characterModal');
+    alert('✅ Персонаж добавлен в память.\nНе забудь нажать «💾 Скачать characters.json» и заменить файл!');
+  }
+
+  function deleteCharacter(id) {
+    if (!confirm('Удалить персонажа?')) return;
+    data.characters = data.characters.filter(x => x.id !== id);
+    render();
+  }
+
+  function showCharacter(id) {
+    if (adminMode) { openCharacterModal(id); return; }    const c = data.characters.find(x => x.id === id);
+    alert(`${c.name}${c.role?' ('+c.role+')':''}\n\n${c.desc}`);
+  }
+
+  // ===== Записи =====
+  function openPostModal(id) {
+    editingPostId = id || null;
+    document.getElementById('postModalTitle').textContent = id ? 'Редактировать запись' : 'Новая запись';
+    if (id) {
+      const p = data.posts.find(x => x.id === id);
+      document.getElementById('postTitle').value = p.title;
+      document.getElementById('postTag').value = p.tag || '';
+      document.getElementById('postContent').value = p.content;
+    } else {
+      ['postTitle','postTag','postContent'].forEach(i => document.getElementById(i).value = '');
+    }
+    document.getElementById('postModal').classList.add('active');
+  }
+
+  function savePost() {
+    const title = document.getElementById('postTitle').value.trim();
+    const content = document.getElementById('postContent').value.trim();
+    if (!title || !content) { alert('Заголовок и текст обязательны'); return; }
+    const obj = {
+      id: editingPostId || Date.now(),
+      title,
+      tag: document.getElementById('postTag').value.trim(),
+      content,
+      date: editingPostId ? (data.posts.find(x=>x.id===editingPostId).date) : Date.now()
+    };
+    if (editingPostId) {
+      const i = data.posts.findIndex(x => x.id === editingPostId);
+      data.posts[i] = obj;
+    } else {
+      data.posts.push(obj);
+    }
+    render();
+    closeModal('postModal');
+    alert('✅ Запись добавлена в память.\nНе забудь нажать «💾 Скачать posts.json» и заменить файл!');
+  }
+
+  function editPost(id) { openPostModal(id); }
+
+  function deletePost(id) {
+    if (!confirm('Удалить запись?')) return;
+    data.posts = data.posts.filter(x => x.id !== id);
+    render();
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+  });
+
+  init();
+</script>
+</body>
+</html>
